@@ -107,12 +107,21 @@ class Settings:
 
         # ---- machine learning ----------------------------------------
         self.model_dir = _path("MODEL_DIR", BACKEND_DIR / "models" / "plant_disease_model")
+        _default_finetuned = (BACKEND_DIR / "models" / "plant_disease_model" / "best_plant_model.pth")
+        if not _default_finetuned.is_file() and (PROJECT_ROOT.parent / "best_plant_model.pth").is_file():
+            _default_finetuned = PROJECT_ROOT.parent / "best_plant_model.pth"
+        self.finetuned_model_path = _path("FINETUNED_MODEL_PATH", _default_finetuned)
+
+        _default_id2label = (BACKEND_DIR / "models" / "plant_disease_model" / "id2label.json")
+        if not _default_id2label.is_file() and (PROJECT_ROOT.parent / "id2label.json").is_file():
+            _default_id2label = PROJECT_ROOT.parent / "id2label.json"
+        self.id2label_path = _path("ID2LABEL_PATH", _default_id2label)
         self.ml_device = _str("ML_DEVICE", "auto")                        # auto | cpu | cuda
         self.ml_top_k = _int("ML_TOP_K", 5)
         self.ml_confidence_floor = _float("ML_CONFIDENCE_FLOOR", 40.0)    # % below this -> "uncertain"
         self.ml_warmup_on_startup = _bool("ML_WARMUP_ON_STARTUP", True)
         # Ensemble: registry ids are declared in ml_service.MODEL_REGISTRY.
-        self.ml_default_models = _str("ML_DEFAULT_MODELS", "mobilenetv2")  # used when the request selects none
+        self.ml_default_models = _str("ML_DEFAULT_MODELS", "mobilenetv2_finetuned")  # used when the request selects none
         self.ml_parallel = _bool("ML_PARALLEL", True)                      # concurrent inference on CPU
 
         # ---- uploads --------------------------------------------------
